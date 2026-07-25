@@ -9,13 +9,17 @@ no per-tenant key management.
 
 ## Quick start
 
+```sh
+npm install @kavishkagaya/do-secrets
+```
+
 `src/index.ts` — your Worker's entrypoint. Durable Object classes must be exported
 from here, not just from wherever you define them. Re-exporting `SecretStore` under
 your binding's name is enough — no subclass needed unless you want to customize
 behavior (see below):
 
 ```ts
-export { SecretStore as TeamSecrets } from "do-secrets";
+export { SecretStore as TeamSecrets } from "@kavishkagaya/do-secrets";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
