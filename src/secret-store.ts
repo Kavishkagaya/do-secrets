@@ -22,6 +22,11 @@ export class SecretStore<
       if (!storeId) {
         throw new Error("SecretStore must be addressed via idFromName(id)");
       }
+      if (!this.env.MASTER_KEY) {
+        throw new Error(
+          "MASTER_KEY is not set — run `wrangler secret put MASTER_KEY`"
+        );
+      }
       const master = await importMasterKey(this.env.MASTER_KEY);
       return deriveStoreKey(master, storeId);
     })();
@@ -36,6 +41,17 @@ export class SecretStore<
   async get(key: string): Promise<string | null> {
     const encrypted = await this.ctx.storage.get<string>(key);
     return encrypted ? decrypt(encrypted, await this.storeKey()) : null;
+  }
+
+  /** JSON convenience wrapper around `put` — most secrets are structured, not raw strings. */
+  async putJSON<T>(key: string, value: T): Promise<void> {
+    await this.put(key, JSON.stringify(value));
+  }
+
+  /** JSON convenience wrapper around `get`. */
+  async getJSON<T>(key: string): Promise<T | null> {
+    const raw = await this.get(key);
+    return raw === null ? null : (JSON.parse(raw) as T);
   }
 
   async delete(key: string): Promise<void> {

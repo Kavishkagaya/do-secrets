@@ -7,12 +7,29 @@ store's data is encrypted with a key deterministically derived from a single mas
 secret and the store's own id: physically isolated storage per tenant, no shared table,
 no per-tenant key management.
 
-## Setup
+## Quick start
+
+`src/index.ts` — your Worker's entrypoint. Durable Object classes must be exported
+from here, not just from wherever you define them:
 
 ```ts
 import { SecretStore } from "do-secrets";
 
 export class TeamSecrets extends SecretStore {}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const teamId = "team_123"; // from your own auth check — see Design below
+    const store = env.TEAM_SECRETS.get(env.TEAM_SECRETS.idFromName(teamId));
+
+    await store.putJSON("provider:google", { clientId, clientSecret });
+    const config = await store.getJSON<{ clientId: string; clientSecret: string }>(
+      "provider:google"
+    );
+
+    return Response.json(config);
+  },
+};
 ```
 
 ```toml
@@ -27,7 +44,9 @@ new_sqlite_classes = ["TeamSecrets"]
 ```
 
 ```sh
-wrangler secret put MASTER_KEY
+wrangler secret put MASTER_KEY   # required before first deploy — put/get throw a
+                                  # clear error if this was skipped
+wrangler deploy
 ```
 
 ## Usage
@@ -35,9 +54,15 @@ wrangler secret put MASTER_KEY
 ```ts
 const store = env.TEAM_SECRETS.get(env.TEAM_SECRETS.idFromName(teamId));
 
-await store.put("provider:google", JSON.stringify(config));
-await store.get("provider:google"); // string | null
-await store.list("provider:"); // string[]
+// raw strings
+await store.put("token", accessToken);
+await store.get("token"); // string | null
+
+// structured values — reaches for JSON.stringify/parse for you
+await store.putJSON("provider:google", config);
+await store.getJSON<Config>("provider:google"); // Config | null
+
+await store.list("provider:"); // string[] of keys, values stay encrypted
 await store.delete("provider:google");
 await store.clear(); // wipes everything for this id
 ```
