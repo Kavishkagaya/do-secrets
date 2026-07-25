@@ -44,8 +44,8 @@ new_sqlite_classes = ["TeamSecrets"]
 ```
 
 ```sh
-wrangler secret put MASTER_KEY   # required before first deploy — put/get throw a
-                                  # clear error if this was skipped
+wrangler secret put DO_SECRET_MASTER_KEY   # required before first deploy — put/get
+                                             # throw a clear error if this was skipped
 wrangler deploy
 ```
 
@@ -72,7 +72,7 @@ await store.clear(); // wipes everything for this id
 - **No auth.** The Durable Object binding is the trust boundary — whoever can reach
   `env.TEAM_SECRETS` in your Worker is authorized. Gate access in your own request
   handler before you compute an id; this library never sees or checks who's calling.
-- **No key rotation.** One `MASTER_KEY`, forever. Losing it makes every store's data
-  permanently unrecoverable — there is no fallback key version.
+- **No key rotation.** One `DO_SECRET_MASTER_KEY`, forever. Losing it makes every
+  store's data permanently unrecoverable — there is no fallback key version.
 - **Cloudflare Workers only.** Built on Durable Objects and the Web Crypto API. Not
   portable to other runtimes.

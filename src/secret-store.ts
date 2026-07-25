@@ -2,14 +2,14 @@ import { DurableObject } from "cloudflare:workers";
 import { decrypt, deriveStoreKey, encrypt, importMasterKey } from "./crypto.js";
 
 export interface SecretStoreEnv {
-  MASTER_KEY: string;
+  DO_SECRET_MASTER_KEY: string;
 }
 
 /**
  * One instance per id (`idFromName(id)`) — physically isolated, encrypted
  * key/value storage. The encryption key is deterministically derived from
- * MASTER_KEY + this instance's id, so nothing about a specific store's key
- * is ever persisted.
+ * DO_SECRET_MASTER_KEY + this instance's id, so nothing about a specific
+ * store's key is ever persisted.
  */
 export class SecretStore<
   Env extends SecretStoreEnv = SecretStoreEnv,
@@ -22,12 +22,12 @@ export class SecretStore<
       if (!storeId) {
         throw new Error("SecretStore must be addressed via idFromName(id)");
       }
-      if (!this.env.MASTER_KEY) {
+      if (!this.env.DO_SECRET_MASTER_KEY) {
         throw new Error(
-          "MASTER_KEY is not set — run `wrangler secret put MASTER_KEY`"
+          "DO_SECRET_MASTER_KEY is not set — run `wrangler secret put DO_SECRET_MASTER_KEY`"
         );
       }
-      const master = await importMasterKey(this.env.MASTER_KEY);
+      const master = await importMasterKey(this.env.DO_SECRET_MASTER_KEY);
       return deriveStoreKey(master, storeId);
     })();
     return this.#keyPromise;
