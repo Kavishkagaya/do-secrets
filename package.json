@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun test && tsc"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",
