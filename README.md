@@ -10,12 +10,12 @@ no per-tenant key management.
 ## Quick start
 
 `src/index.ts` — your Worker's entrypoint. Durable Object classes must be exported
-from here, not just from wherever you define them:
+from here, not just from wherever you define them. Re-exporting `SecretStore` under
+your binding's name is enough — no subclass needed unless you want to customize
+behavior (see below):
 
 ```ts
-import { SecretStore } from "do-secrets";
-
-export class TeamSecrets extends SecretStore {}
+export { SecretStore as TeamSecrets } from "do-secrets";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -65,6 +65,20 @@ await store.getJSON<Config>("provider:google"); // Config | null
 await store.list("provider:"); // string[] of keys, values stay encrypted
 await store.delete("provider:google");
 await store.clear(); // wipes everything for this id
+```
+
+## Customizing
+
+`SecretStore` is a plain class, so subclassing works normally if you want to add
+behavior — logging, validation, whatever. No config options or hooks to learn:
+
+```ts
+export class LoggedSecrets extends SecretStore {
+  async put(key: string, value: string) {
+    console.log(`writing ${key}`);
+    return super.put(key, value);
+  }
+}
 ```
 
 ## Design
