@@ -1,6 +1,6 @@
 {
   "name": "@kavishkagaya/do-secrets",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Encrypted, per-tenant secret storage for Cloudflare Workers, built on Durable Objects.",
   "license": "MIT",
   "type": "module",
