@@ -18,3 +18,9 @@ bun run typecheck
 1. Fork, branch from `master`.
 2. `bun test` and `bun run build` must pass — CI checks both on every PR.
 3. Open a PR against `master` with a short description of the "why."
+
+## Releasing (maintainers)
+
+Bump `version` in `package.json` and push/merge to `master`. The release workflow
+diffs that version against what's live on npm — if it changed, it publishes and
+cuts a matching GitHub release automatically. No separate tag or publish step.
