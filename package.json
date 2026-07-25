@@ -1,0 +1,21 @@
+{
+  "name": "do-secrets",
+  "version": "0.1.0",
+  "description": "Encrypted, per-tenant secret storage for Cloudflare Workers, built on Durable Objects.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250101.0",
+    "typescript": "^5.7.0"
+  }
+}
